@@ -1,1 +1,1 @@
-# Password-Generator
+In this program we are going to take the number of letters, number of integers, number of special characters we are going to generate a random strong password of length of sum of input letters, input integers and input special characters.
