@@ -13,7 +13,7 @@ A Python-based password generator that creates secure passwords using a combinat
 ## Requirements
 
 - Python 3.x
-- `pyfiglet` library for text art display
+- `pyfiglet` library for text art display.
 
 To install the necessary libraries, you can run:
 
