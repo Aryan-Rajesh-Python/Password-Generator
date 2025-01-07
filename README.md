@@ -1,21 +1,36 @@
 # Password Generator
 
-A Python-based password generator that creates secure passwords using a combination of letters, digits, and special characters. The generator uses the `secrets` module for improved security and shuffles the password characters for better randomness.
+A **secure, customizable, and interactive password generator** built in Python. This application enables users to generate strong passwords by specifying the desired number of letters, digits, and special characters, ensuring compliance with modern security standards. It also provides options to save generated passwords to a file for future reference.
 
 ## Features
 
-- Generates a password with a mix of uppercase letters, lowercase letters, digits, and special characters.
-- Uses Python's `secrets` module for cryptographic-grade randomness.
-- Shuffles the password to make the order of characters unpredictable.
-- Validates user input to ensure positive values for password components.
-- Ensures the generated password meets a minimum length for better security.
+### 🔒 Secure Password Generation
+- Utilizes Python's `secrets` module to generate cryptographically strong random passwords.
+- Ensures a minimum password length of 12 characters for enhanced security.
+
+### 🎨 Fully Customizable
+- Choose the number of:
+  - **Letters**: Uppercase and lowercase alphabet characters.
+  - **Digits**: Numbers (0-9).
+  - **Special Characters**: Symbols like `@, #, $, %`, etc.
+  
+### 📁 Save Passwords
+- Option to save the generated password to a text file (`generated_passwords.txt`) for future use.
+
+### 🖥️ User-Friendly Interface
+- Interactive command-line interface with clear prompts for user input.
+- Dynamic feedback for errors (e.g., invalid input, insufficient password length).
+
+### 🛠️ Error Handling
+- Validates user inputs to prevent negative values or invalid numbers.
+- Provides clear error messages for invalid entries or password generation requirements.
 
 ## Requirements
 
-- Python 3.x
-- `pyfiglet` library for text art display.
+The script requires Python 3.6 or later and the following Python libraries:
 
-To install the necessary libraries, you can run:
-
-```bash
-pip install pyfiglet
+- **Standard Libraries**:
+  - `secrets`
+  - `string`
+- **Third-party Library**:
+  - `pyfiglet` (for ASCII art headers)
