@@ -28,6 +28,7 @@ You can install the necessary dependencies using pip:
 
 ```bash
 pip install cryptography pyfiglet
+```
 
 ## Installation
 
