@@ -28,3 +28,8 @@ You can install the necessary dependencies using pip:
 
 ```bash
 pip install cryptography pyfiglet
+
+## Installation
+
+git clone https://github.com/Aryan-Rajesh-Python/Password-Generator.git
+python passwordgenerator.py
