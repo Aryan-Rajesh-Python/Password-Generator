@@ -32,5 +32,7 @@ pip install cryptography pyfiglet
 
 ## Installation
 
+```bash
 git clone https://github.com/Aryan-Rajesh-Python/Password-Generator.git
 python passwordgenerator.py
+```
