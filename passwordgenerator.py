@@ -5,6 +5,7 @@ import os
 import re
 import logging
 from cryptography.fernet import Fernet
+from typing import Tuple
 
 # Ensure the logging directory exists
 log_dir = os.path.expanduser('~/passwords')
@@ -29,7 +30,7 @@ else:
         key = kf.read()
 fernet = Fernet(key)
 
-def password_generator(num_letters, num_digits, num_specials, min_length=12):
+def password_generator(num_letters: int, num_digits: int, num_specials: int, min_length: int = 12) -> str:
     """
     Generates a secure password with letters, digits, and special characters.
     """
@@ -40,22 +41,18 @@ def password_generator(num_letters, num_digits, num_specials, min_length=12):
     # Validate inputs
     if num_letters < 0 or num_digits < 0 or num_specials < 0:
         logging.error("Negative values provided for character counts.")
-        return "Error: Inputs must be non-negative integers."
+        raise ValueError("Inputs must be non-negative integers.")
 
     num_letters, num_digits, num_specials = adjust_lengths(num_letters, num_digits, num_specials, min_length)
 
-    try:
-        password = (
-            ''.join(secrets.choice(letters) for _ in range(num_letters)) +
-            ''.join(secrets.choice(digits) for _ in range(num_digits)) +
-            ''.join(secrets.choice(specials) for _ in range(num_specials))
-        )
-        return ''.join(secrets.SystemRandom().sample(password, len(password)))
-    except Exception as e:
-        logging.error(f"Password generation failed: {e}")
-        return f"Error: Failed to generate password. {e}"
+    password = (
+        ''.join(secrets.choice(letters) for _ in range(num_letters)) +
+        ''.join(secrets.choice(digits) for _ in range(num_digits)) +
+        ''.join(secrets.choice(specials) for _ in range(num_specials))
+    )
+    return ''.join(secrets.SystemRandom().sample(password, len(password)))
 
-def adjust_lengths(num_letters, num_digits, num_specials, min_length):
+def adjust_lengths(num_letters: int, num_digits: int, num_specials: int, min_length: int) -> Tuple[int, int, int]:
     """
     Adjust the lengths of the different character types to meet the minimum length requirement.
     """
@@ -67,7 +64,7 @@ def adjust_lengths(num_letters, num_digits, num_specials, min_length):
         num_specials += remaining - (remaining // 2 + remaining // 4)
     return num_letters, num_digits, num_specials
 
-def password_strength(password):
+def password_strength(password: str) -> str:
     """
     Evaluates password strength with stricter criteria.
     """
@@ -85,11 +82,15 @@ def password_strength(password):
         score += 1
     if re.search(r'[!@#$%^&*()-_=+<>?/]', password):
         score += 1
+    if not re.search(r'(.)\1{2,}', password):  # No repeated characters
+        score += 1
+    if not re.search(r'(123|abc|qwerty|password)', password.lower()):  # Avoid common patterns
+        score += 1
 
-    strengths = ["Very Weak", "Weak", "Moderate", "Strong", "Very Strong", "Extremely Strong"]
+    strengths = ["Very Weak", "Weak", "Moderate", "Strong", "Very Strong", "Extremely Strong", "Unbreakable"]
     return strengths[min(score, len(strengths) - 1)]
 
-def get_user_input(min_length=12):
+def get_user_input(min_length: int = 12) -> Tuple[int, int, int]:
     """
     Prompts the user to enter the number of letters, digits, and special characters for the password.
     Ensures input validity and minimum password length.
@@ -114,7 +115,7 @@ def get_user_input(min_length=12):
             print("Error: Please enter valid integers.")
             logging.warning("User entered invalid input.")
 
-def save_password_to_file(password):
+def save_password_to_file(password: str) -> None:
     """
     Saves the generated password to a file in the user's home directory.
     Encrypts the password before saving.
@@ -123,6 +124,11 @@ def save_password_to_file(password):
         encrypted_password = fernet.encrypt(password.encode())
         file_path = os.path.expanduser('~/passwords/generated_passwords.txt')
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        if os.path.exists(file_path):
+            print(f"Warning: Password file already exists at {file_path}. Appending to the file.")
+            logging.info("Appending to existing password file.")
+        
         with open(file_path, "ab") as file:
             file.write(encrypted_password + b"\n")
         print(f"Password saved to {file_path}.")
@@ -131,7 +137,7 @@ def save_password_to_file(password):
         print(f"Error saving password: {e}")
         logging.error(f"Failed to save password: {e}")
 
-def confirm(prompt):
+def confirm(prompt: str) -> bool:
     """
     Prompts the user for a yes/no confirmation and validates the input.
     """
@@ -141,7 +147,7 @@ def confirm(prompt):
             return choice == "yes"
         print("Invalid input. Please enter 'yes' or 'no'.")
 
-def main():
+def main() -> None:
     """
     Main function that runs the password generator program.
     Includes options for generating, evaluating, and saving passwords.
@@ -157,13 +163,9 @@ def main():
         print("\n1. Generate a Password\n2. Exit")
         choice = input("Enter your choice: ").strip()
         if choice == "1":
-            # Directly proceed with password generation instead of asking again
             num_letters, num_digits, num_specials = get_user_input(min_length)
-            password = password_generator(num_letters, num_digits, num_specials, min_length)
-
-            if "Error" in password:
-                print(password)
-            else:
+            try:
+                password = password_generator(num_letters, num_digits, num_specials, min_length)
                 print(f"\nGenerated Password: {password}")
                 print(f"Password Strength: {password_strength(password)}")
 
@@ -171,6 +173,9 @@ def main():
                     save_password_to_file(password)
                 else:
                     print("Password not saved.")
+            except Exception as e:
+                print(f"Error generating password: {e}")
+                logging.error(f"Failed to generate password: {e}")
         elif choice == "2":
             print("Thank you for using the Password Generator. Goodbye!")
             logging.info("User exited the program.")
